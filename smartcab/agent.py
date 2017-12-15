@@ -40,7 +40,8 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
-        self.epsilon = pow(0.995, self.trial)
+    #    self.epsilon = pow(0.995, self.trial)     # epsilon = a ^ t (for 0 < a < 1), a=0.995, tolerance=0.002
+        self.epsilon = math.cos(0.0015 * self.trial)
         self.trial += 1
         if testing:
             self.epsilon = 0
@@ -120,7 +121,8 @@ class LearningAgent(Agent):
             if (random.random() < self.epsilon):
                 action = random.choice(self.valid_actions)
             else:
-                action = self.Q[state].keys()[self.Q[state].values().index(self.get_maxQ(state))]
+                maxQ_action = [key for key,value in self.Q[state].items() if value == self.get_maxQ(state)]
+                action = random.choice(maxQ_action)
  
         return action
 
@@ -173,7 +175,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha=0.7)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=0.5)
     
     ##############
     # Follow the driving agent
@@ -195,7 +197,7 @@ def run():
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test=20, tolerance=0.002)
+    sim.run(n_test=20, tolerance=0.01)
 
 
 if __name__ == '__main__':
